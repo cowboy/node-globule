@@ -33,14 +33,14 @@ The `options` object supports all [glob][] library options, along with a few ext
 Match one or more globbing patterns against one or more file paths. Returns a uniqued array of all file paths that match any of the specified globbing patterns. Both the `patterns` and `filepaths` arguments can be a single string or array of strings. Paths matching patterns that begin with `!` will be excluded from the returned array. Patterns are processed in order, so inclusion and exclusion order is significant.
 
 ```js
-grunt.file.match(patterns, filepaths [, options])
+globule.match(patterns, filepaths [, options])
 ```
 
 ### globule.isMatch
 This method contains the same signature and logic as the `globule.match` method, but returns `true` if any files were matched, otherwise `false`.
 
 ```js
-grunt.file.isMatch(patterns, filepaths [, options])
+globule.isMatch(patterns, filepaths [, options])
 ```
 
 ### globule.mapping
