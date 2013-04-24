@@ -60,9 +60,9 @@ exports['match'] = {
   },
   'flatten': function(test) {
     test.expect(1);
-    test.deepEqual(globule.match([['*.js', '*.css'], ['*.*', '*.js']], ['foo.js', 'bar.css']),
+    test.deepEqual(globule.match([['*.js', '*.css'], ['*.*', '*.js']], [['foo.js', ['bar.css']]]),
       ['foo.js', 'bar.css'],
-      'should process nested pattern arrays correctly.');
+      'should process nested pattern / filepaths arrays correctly.');
     test.done();
   },
   'exclusion': function(test) {
