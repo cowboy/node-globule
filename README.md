@@ -86,24 +86,24 @@ globule.find("*.js", {srcBase: "foo", prefixBase: true})
 
 ```js
 globule.findMapping("foo/*.js")
-// [{src: "foo/a.js", dest: "foo/a.js"}, {src: "foo/b.js", dest: "foo/b.js"}]
+// [{src: ["foo/a.js"], dest: "foo/a.js"}, {src: ["foo/b.js"], dest: "foo/b.js"}]
 
 globule.findMapping("foo/*.js", {destBase: "bar"})
-// [{src: "foo/a.js", dest: "bar/foo/a.js"}, {src: "foo/b.js", dest: "bar/foo/b.js"}]
+// [{src: ["foo/a.js"], dest: "bar/foo/a.js"}, {src: ["foo/b.js"], dest: "bar/foo/b.js"}]
 
 globule.findMapping("*.js", {srcBase: "foo", destBase: "bar"})
-// [{src: "foo/a.js", dest: "bar/a.js"}, {src: "foo/b.js", dest: "bar/b.js"}]
+// [{src: ["foo/a.js"], dest: "bar/a.js"}, {src: ["foo/b.js"], dest: "bar/b.js"}]
 ```
 
 ```js
 globule.mapping(["foo/a.js", "foo/b.js"])
-// [{src: "foo/a.js", dest: "foo/a.js"}, {src: "foo/b.js", dest: "foo/b.js"}]
+// [{src: ["foo/a.js"], dest: "foo/a.js"}, {src: ["foo/b.js"], dest: "foo/b.js"}]
 
 globule.mapping(["foo/a.js", "foo/b.js"], {destBase: "bar"})
-// [{src: "foo/a.js", dest: "bar/foo/a.js"}, {src: "foo/b.js", dest: "bar/foo/b.js"}]
+// [{src: ["foo/a.js"], dest: "bar/foo/a.js"}, {src: ["foo/b.js"], dest: "bar/foo/b.js"}]
 
 globule.mapping(["a.js", "b.js"], {srcBase: "foo", destBase: "bar"})
-// [{src: "foo/a.js", dest: "bar/a.js"}, {src: "foo/b.js", dest: "bar/b.js"}]
+// [{src: ["foo/a.js"], dest: "bar/a.js"}, {src: ["foo/b.js"], dest: "bar/b.js"}]
 ```
 
 ## Contributing
