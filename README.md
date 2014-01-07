@@ -113,5 +113,5 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 _(Nothing yet)_
 
 ## License
-Copyright (c) 2013 "Cowboy" Ben Alman  
+Copyright (c) 2014 "Cowboy" Ben Alman  
 Licensed under the MIT license.
