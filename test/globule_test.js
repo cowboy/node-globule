@@ -209,6 +209,18 @@ exports['find'] = {
       'inclusion / exclusion order matters');
     test.done();
   },
+  'options.src': function(test) {
+    test.expect(4);
+    test.deepEqual(globule.find({src: '**/*.js'}), ['js/bar.js', 'js/foo.js'], 'single pattern argument should match.');
+    test.deepEqual(globule.find({src: ['**/*.js', '**/*.css']}),
+      ['js/bar.js', 'js/foo.js', 'css/baz.css', 'css/qux.css'],
+      'array of patterns should match.');
+    test.deepEqual(globule.find({src: [['**/*.js'], [['**/*.css', 'js/*.js']]]}),
+      ['js/bar.js', 'js/foo.js', 'css/baz.css', 'css/qux.css'],
+      'array of arrays of patterns should be flattened.');
+    test.deepEqual(globule.find({src: '*.xyz'}), [], 'bad pattern should fail to match.');
+    test.done();
+  },
   'options.mark': function(test) {
     test.expect(4);
     test.deepEqual(globule.find('**d*/**'), [
@@ -457,7 +469,7 @@ exports['findMapping'] = {
     done();
   },
   'basic matching': function(test) {
-    test.expect(2);
+    test.expect(3);
 
     var actual = globule.findMapping(['expand/**/*.txt']);
     var expected = [
@@ -467,13 +479,16 @@ exports['findMapping'] = {
     ];
     test.deepEqual(actual, expected, 'default options');
 
+    actual = globule.findMapping({src: ['expand/**/*.txt']});
+    test.deepEqual(actual, expected, 'should also work when specifying src as option.');
+
     expected = globule.mapping(globule.find(['expand/**/*.txt']));
     test.deepEqual(actual, expected, 'this is what it\'s doing under the hood, anwyays.');
 
     test.done();
   },
   'options.srcBase': function(test) {
-    test.expect(1);
+    test.expect(2);
     var actual = globule.findMapping(['**/*.txt'], {destBase: 'dest', srcBase: 'expand/deep'});
     var expected = [
       {dest: 'dest/deep.txt', src: ['expand/deep/deep.txt']},
@@ -481,6 +496,9 @@ exports['findMapping'] = {
       {dest: 'dest/deeper/deepest/deepest.txt', src: ['expand/deep/deeper/deepest/deepest.txt']},
     ];
     test.deepEqual(actual, expected, 'srcBase should be stripped from front of destPath, pre-destBase+destPath join');
+
+    actual = globule.findMapping({src: ['**/*.txt'], destBase: 'dest', srcBase: 'expand/deep'});
+    test.deepEqual(actual, expected, 'should also work with src as option.');
     test.done();
   },
   'multiple src per dest via rename': function(test) {
