@@ -483,4 +483,21 @@ exports['findMapping'] = {
     test.deepEqual(actual, expected, 'srcBase should be stripped from front of destPath, pre-destBase+destPath join');
     test.done();
   },
+  'multiple src per dest via rename': function(test) {
+    test.expect(1);
+    var actual = globule.findMapping('**/*.{js,css,txt}', {
+      srcBase: 'expand',
+      filter: 'isFile',
+      rename: function(dest) {
+        return 'build/all.' + dest.split('.').slice(-1);
+      },
+    });
+    var expected = [
+      {dest: 'build/all.css', src: ['expand/css/baz.css', 'expand/css/qux.css']},
+      {dest: 'build/all.txt', src: ['expand/deep/deep.txt', 'expand/deep/deeper/deeper.txt', 'expand/deep/deeper/deepest/deepest.txt']},
+      {dest: 'build/all.js', src: ['expand/js/bar.js', 'expand/js/foo.js']},
+    ];
+    test.deepEqual(actual, expected, 'multiple src files are grouped into a per-dest array when renamed dest is same');
+    test.done();
+  },
 };
