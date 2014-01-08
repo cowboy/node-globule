@@ -31,8 +31,7 @@
     "grunt-contrib-jshint": "~0.8.0",
     "grunt-contrib-nodeunit": "~0.2.2",
     "grunt-contrib-watch": "~0.5.3",
-    "grunt": "~0.4.2",
-    "async": "~0.2.9"
+    "grunt": "~0.4.2"
   },
   "keywords": [
     "glob",
@@ -48,6 +47,7 @@
   "dependencies": {
     "lodash": "~2.4.1",
     "glob": "~3.2.7",
-    "minimatch": "~0.2.11"
+    "minimatch": "~0.2.11",
+    "async": "~0.2.9"
   }
 }
