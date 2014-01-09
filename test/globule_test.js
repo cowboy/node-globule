@@ -69,6 +69,41 @@ exports['find'] = {
       test.done();
     });
   },
+  'event emitter pause': function(test) {
+    test.expect(2);
+    var g = globule.find('**/*.js', '!js/bar.js', '**/*.css', '!css/baz.css', 'js/foo.js');
+    var filepaths = [];
+    var ended = false;
+    g.on('match', function(filepath) {
+      filepaths.push(filepath);
+      g.pause();
+      setTimeout(function() {
+        var expected = ['js/foo.js'];
+        test.ok(!ended, 'end event should not be emitted while paused.');
+        test.deepEqual(filepaths, expected, 'match-emitted filepaths should not include anything after the first inclusion pattern.');
+        test.done();
+      }, 100);
+    });
+    g.on('end', function() {
+      ended = true;
+    });
+  },
+  'event emitter resume': function(test) {
+    test.expect(2);
+    var g = globule.find('**/*.js', '!js/bar.js', '**/*.css', '!css/baz.css', 'js/foo.js');
+    var filepaths = [];
+    g.on('match', function(filepath) {
+      filepaths.push(filepath);
+      g.pause();
+      setTimeout(g.resume.bind(g), 100);
+    });
+    g.on('end', function(actual) {
+      var expected = ['js/foo.js', 'css/qux.css'];
+      test.deepEqual(actual, expected, 'end-emitted result set should be the same.');
+      test.deepEqual(filepaths, expected, 'match-emitted filepaths should be the same.');
+      test.done();
+    });
+  },
   'basic matching': function(test) {
     test.expect(5);
     async.series([
