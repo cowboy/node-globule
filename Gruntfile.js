@@ -49,6 +49,10 @@ module.exports = function(grunt) {
       var dest = src.replace(/(_test)/, '_sync$1');
       grunt.log.write('Creating ' + dest + '...');
       var s = grunt.file.read(src);
+      // Test to see if line endings will need to be Windows-ized.
+      var normalized = s.replace(/\r\n/g, '\n');
+      var unNormalize = normalized !== s;
+      s = normalized;
       // I wanted to parse the AST, really. But this is SO MUCH EASIER.
       [
         [
@@ -88,6 +92,10 @@ module.exports = function(grunt) {
         s = s.replace(a[0], a[1]);
       });
       s = '// THIS FILE WAS AUTO-GENERATED\n// FROM: ' + src + '\n// PLEASE DO NOT EDIT DIRECTLY */\n\n' + s;
+      // Re-Windows-ize line endings.
+      if (unNormalize) {
+        s = s.replace(/\n/g, '\r\n');
+      }
       try {
         grunt.file.write(dest, s);
         grunt.log.ok();
