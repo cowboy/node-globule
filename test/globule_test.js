@@ -35,6 +35,35 @@ exports['find'] = {
     process.chdir(this.cwd);
     done();
   },
+  'event emitter': function(test) {
+    test.expect(2);
+    var g = globule.find('**/*.js', '!js/bar.js', '**/*.css', '!css/baz.css', 'js/foo.js');
+    var filepaths = [];
+    g.on('match', function(filepath) {
+      filepaths.push(filepath);
+    });
+    g.on('end', function(actual) {
+      var expected = ['js/foo.js', 'css/qux.css'];
+      test.deepEqual(actual, expected, 'end-emitted result set should be the same.');
+      test.deepEqual(filepaths, expected, 'match-emitted filepaths should be the same.');
+      test.done();
+    });
+  },
+  'event emitter abort': function(test) {
+    test.expect(2);
+    var g = globule.find('**/*.js', '!js/bar.js', '**/*.css', '!css/baz.css', 'js/foo.js');
+    var filepaths = [];
+    g.on('match', function(filepath) {
+      filepaths.push(filepath);
+      g.abort();
+    });
+    g.on('end', function(actual) {
+      var expected = ['js/foo.js'];
+      test.deepEqual(actual, expected, 'end-emitted result set should not include anything after the first inclusion pattern.');
+      test.deepEqual(filepaths, expected, 'match-emitted filepaths should not include anything after the first inclusion pattern.');
+      test.done();
+    });
+  },
   'basic matching': function(test) {
     test.expect(5);
     async.series([
