@@ -11,15 +11,10 @@ module.exports = function(grunt) {
       options: {
         jshintrc: '.jshintrc'
       },
-      gruntfile: {
-        src: 'Gruntfile.js'
-      },
-      lib: {
-        src: ['lib/**/*.js']
-      },
-      test: {
-        src: ['test/*.js']
-      },
+      gruntfile: 'Gruntfile.js',
+      lib: ['lib/**/*.js'],
+      test: ['test/*.js', '!test/*sync*'],
+      testsync: ['test/*sync*'],
     },
     watch: {
       gruntfile: {
