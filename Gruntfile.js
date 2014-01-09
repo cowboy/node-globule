@@ -56,7 +56,7 @@ module.exports = function(grunt) {
       // I wanted to parse the AST, really. But this is SO MUCH EASIER.
       [
         [
-          /  'event emitter[\s\S]+?\n  },\n/g,
+          /  '(?:constructor|event emitter)[\s\S]+?\n  },\n/g,
           ''
         ],
         [

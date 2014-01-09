@@ -35,6 +35,22 @@ exports['find'] = {
     process.chdir(this.cwd);
     done();
   },
+  'constructor': function(test) {
+    test.expect(3);
+    var expected = ['bar.js', 'foo.js'];
+    var g = new globule.Globule(['*.js'], {srcBase: 'js'}, function(err, actual) {
+      test.deepEqual(actual, expected, 'callback result set should be the same.');
+    });
+    var filepaths = [];
+    g.on('match', function(filepath) {
+      filepaths.push(filepath);
+    });
+    g.on('end', function(actual) {
+      test.deepEqual(actual, expected, 'end-emitted result set should be the same.');
+      test.deepEqual(filepaths, expected, 'match-emitted filepaths should be the same.');
+      test.done();
+    });
+  },
   'event emitter': function(test) {
     test.expect(2);
     var g = globule.find('**/*.js', '!js/bar.js', '**/*.css', '!css/baz.css', 'js/foo.js');
