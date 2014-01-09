@@ -50,15 +50,20 @@ exports['find'] = {
     });
   },
   'event emitter abort': function(test) {
-    test.expect(2);
+    test.expect(3);
     var g = globule.find('**/*.js', '!js/bar.js', '**/*.css', '!css/baz.css', 'js/foo.js');
     var filepaths = [];
+    var aborted = false;
     g.on('match', function(filepath) {
       filepaths.push(filepath);
       g.abort();
     });
+    g.on('abort', function() {
+      aborted = true;
+    });
     g.on('end', function(actual) {
       var expected = ['js/foo.js'];
+      test.ok(aborted, 'abort event should have been emitted.');
       test.deepEqual(actual, expected, 'end-emitted result set should not include anything after the first inclusion pattern.');
       test.deepEqual(filepaths, expected, 'match-emitted filepaths should not include anything after the first inclusion pattern.');
       test.done();
