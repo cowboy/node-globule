@@ -30,7 +30,7 @@ var globule = require('../lib/globule.js');
     test.ifError(value)
 */
 
-exports['find'] = {
+exports['findSync'] = {
   setUp: function(done) {
     this.cwd = process.cwd();
     process.chdir('test/fixtures/expand');

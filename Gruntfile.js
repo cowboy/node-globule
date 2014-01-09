@@ -65,6 +65,10 @@ module.exports = function(grunt) {
           /(globule\.find)(\([\s\S]+?), function.*?\{/g,
           '  actual = $1Sync$2);'
         ],
+        [
+          /(^exports\['find)/gm,
+          '$1Sync'
+        ],
         /var (?=expected)/g,
         [
           /(\s*)(test\.expect.*)/g,
