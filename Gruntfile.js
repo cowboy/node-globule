@@ -5,7 +5,8 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     nodeunit: {
-      files: ['test/**/*_test.js'],
+      async: ['test/*.js', '!test/*sync*.js'],
+      sync: ['test/*sync*.js'],
     },
     jshint: {
       options: {
@@ -13,8 +14,8 @@ module.exports = function(grunt) {
       },
       gruntfile: 'Gruntfile.js',
       lib: ['lib/**/*.js'],
-      test: ['test/*.js', '!test/*sync*'],
-      testsync: ['test/*sync*'],
+      test: ['test/*.js', '!test/*sync*.js'],
+      testsync: ['test/*sync*.js'],
     },
     watch: {
       gruntfile: {
@@ -50,6 +51,10 @@ module.exports = function(grunt) {
       var s = grunt.file.read(src);
       // I wanted to parse the AST, really. But this is SO MUCH EASIER.
       [
+        [
+          /  'event emitter[\s\S]+?\n  },\n/g,
+          ''
+        ],
         [
           /(var async = require\('async'\);)/,
           '// $1'
