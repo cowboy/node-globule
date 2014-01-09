@@ -71,7 +71,7 @@ exports['find'] = {
   },
   'event emitter pause': function(test) {
     test.expect(2);
-    var g = globule.find('**/*.js', '!js/bar.js', '**/*.css', '!css/baz.css', 'js/foo.js');
+    var g = globule.find('**/*.js', '!js/bar.js', '**/*.css');
     var filepaths = [];
     var ended = false;
     g.on('match', function(filepath) {
@@ -80,9 +80,9 @@ exports['find'] = {
       setTimeout(function() {
         var expected = ['js/foo.js'];
         test.ok(!ended, 'end event should not be emitted while paused.');
-        test.deepEqual(filepaths, expected, 'match-emitted filepaths should not include anything after the first inclusion pattern.');
+        test.deepEqual(filepaths, expected, 'match-emitted filepaths should not include matches from after the first inclusion pattern.');
         test.done();
-      }, 100);
+      }, 50);
     });
     g.on('end', function() {
       ended = true;
@@ -90,17 +90,31 @@ exports['find'] = {
   },
   'event emitter resume': function(test) {
     test.expect(2);
-    var g = globule.find('**/*.js', '!js/bar.js', '**/*.css', '!css/baz.css', 'js/foo.js');
+    var g = globule.find('**/*.{txt,md}', '**/*.{js,css}', '**/');
     var filepaths = [];
     g.on('match', function(filepath) {
       filepaths.push(filepath);
       g.pause();
-      setTimeout(g.resume.bind(g), 100);
+      setTimeout(g.resume.bind(g), 50);
     });
     g.on('end', function(actual) {
-      var expected = ['js/foo.js', 'css/qux.css'];
+      var expected = [
+        'README.md',
+        'deep/deep.txt',
+        'deep/deeper/deeper.txt',
+        'deep/deeper/deepest/deepest.txt',
+        'css/baz.css',
+        'css/qux.css',
+        'js/bar.js',
+        'js/foo.js',
+        'css/',
+        'deep/',
+        'deep/deeper/',
+        'deep/deeper/deepest/',
+        'js/',
+      ];
       test.deepEqual(actual, expected, 'end-emitted result set should be the same.');
-      test.deepEqual(filepaths, expected, 'match-emitted filepaths should be the same.');
+      test.deepEqual(filepaths.sort(), expected.sort(), 'match-emitted filepaths should be the same (but not necessarily in-order).');
       test.done();
     });
   },
