@@ -55,41 +55,32 @@ module.exports = function(grunt) {
       s = normalized;
       // I wanted to parse the AST, really. But this is SO MUCH EASIER.
       [
-        [
-          /  '(?:constructor|event emitter)[\s\S]+?\n  },\n/g,
-          ''
-        ],
-        [
-          /(var async = require\('async'\);)/,
-          '// $1'
-        ],
+        // Remove entire modules.
+        /exports\['(?:Globule|event emitter)'[\s\S]+?\n\};\n+/g,
+        // Remove global functions.
+        /(\/\/[^\n]+\n)+function sortFilepathsByPattern[\s\S]+?\n\}\n+/g,
+        // Rename modules.
+        /(^exports\['find)/gm,
+        '$1Sync',
+        // Rewrite async.series calls.
+        /(var async = require\('async'\);)/,
+        '// $1',
         /(\s*async\.series\(\[)/g,
         /(\s*(?:\},\n\s+)?function\(next\) \{)/g,
-        [
-          /(\},\n\s+\], test\.done\);)/g,
-          '    test.done();'
-        ],
+        /(\},\n\s+\], test\.done\);)/g,
+        '    test.done();',
         /\s*(next\(\);\n\s+\}\);)/g,
-        [
-          /(globule\.find)(\([\s\S]+?), function.*?\{/g,
-          '  actual = $1Sync$2);'
-        ],
-        [
-          /(^exports\['find)/gm,
-          '$1Sync'
-        ],
+        /(globule\.find)(\([\s\S]+?), function.*?\{/g,
+        '  actual = $1Sync$2);',
         /var (?=expected)/g,
-        [
-          /(\s*)(test\.expect.*)/g,
-          '$1$2$1var actual, expected;'
-        ],
-        [
-          /^          /gm,
-          '    '
-        ]
-      ].forEach(function(a) {
-        if (!Array.isArray(a)) { a = [a, '']; }
-        s = s.replace(a[0], a[1]);
+        /(\s*)(test\.expect.*)/g,
+        '$1$2$1var actual, expected;',
+        // Fix indentation.
+        /^          /gm,
+        '    ',
+      ].forEach(function(re, i, arr) {
+        if (typeof re === 'string') { return; }
+        s = s.replace(re, typeof arr[i + 1] === 'string' ? arr[i + 1] : '');
       });
       s = '// THIS FILE WAS AUTO-GENERATED\n// FROM: ' + src + '\n// PLEASE DO NOT EDIT DIRECTLY */\n\n' + s;
       // Re-Windows-ize line endings.

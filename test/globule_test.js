@@ -25,7 +25,18 @@ var globule = require('../lib/globule.js');
     test.ifError(value)
 */
 
-exports['find'] = {
+// When comparing "match" emitted results, per-pattern filepaths are often
+// emitted out-of-order. So first group them by pattern, then sort, then
+// build the result array. This is a more realistic comparison than just
+// sorting the entire array.
+function sortFilepathsByPattern(filepaths, lengths) {
+  return lengths.reduce(function(result, length) {
+    var sorted = filepaths.slice(result.length, result.length + length).sort();
+    return result.concat(sorted);
+  }, []);
+}
+
+exports['Globule'] = {
   setUp: function(done) {
     this.cwd = process.cwd();
     process.chdir('test/fixtures/expand');
@@ -47,9 +58,24 @@ exports['find'] = {
     });
     g.on('end', function(actual) {
       test.deepEqual(actual, expected, 'end-emitted result set should be the same.');
-      test.deepEqual(filepaths.sort(), expected.sort(), 'match-emitted filepaths should be the same (but possibly out-of-order when multiple matches are found per pattern).');
+      test.deepEqual(
+        sortFilepathsByPattern(filepaths, [1, 1]),
+        sortFilepathsByPattern(expected, [1, 1]),
+        'match-emitted filepaths should be the same (but possibly out-of-order when multiple matches are found per pattern).');
       test.done();
     });
+  },
+};
+
+exports['event emitter'] = {
+  setUp: function(done) {
+    this.cwd = process.cwd();
+    process.chdir('test/fixtures/expand');
+    done();
+  },
+  tearDown: function(done) {
+    process.chdir(this.cwd);
+    done();
   },
   'event emitter': function(test) {
     test.expect(2);
@@ -107,19 +133,9 @@ exports['find'] = {
   'event emitter resume': function(test) {
     test.expect(2);
     var expected = [
-      'README.md',
-      'deep/deep.txt',
-      'deep/deeper/deeper.txt',
-      'deep/deeper/deepest/deepest.txt',
-      'css/baz.css',
-      'css/qux.css',
-      'js/bar.js',
-      'js/foo.js',
-      'css/',
-      'deep/',
-      'deep/deeper/',
-      'deep/deeper/deepest/',
-      'js/',
+      'README.md', 'deep/deep.txt', 'deep/deeper/deeper.txt', 'deep/deeper/deepest/deepest.txt',
+      'css/baz.css', 'css/qux.css', 'js/bar.js', 'js/foo.js',
+      'css/', 'deep/', 'deep/deeper/', 'deep/deeper/deepest/', 'js/',
     ];
     var g = globule.find('**/*.{txt,md}', '**/*.{js,css}', '**/');
     var filepaths = [];
@@ -130,9 +146,24 @@ exports['find'] = {
     });
     g.on('end', function(actual) {
       test.deepEqual(actual, expected, 'end-emitted result set should be the same.');
-      test.deepEqual(filepaths.sort(), expected.sort(), 'match-emitted filepaths should be the same (but possibly out-of-order when multiple matches are found per pattern).');
+      test.deepEqual(
+        sortFilepathsByPattern(filepaths, [4, 4, 5]),
+        sortFilepathsByPattern(expected, [4, 4, 5]),
+        'match-emitted filepaths should be the same (but possibly out-of-order when multiple matches are found per pattern).');
       test.done();
     });
+  },
+};
+
+exports['find'] = {
+  setUp: function(done) {
+    this.cwd = process.cwd();
+    process.chdir('test/fixtures/expand');
+    done();
+  },
+  tearDown: function(done) {
+    process.chdir(this.cwd);
+    done();
   },
   'basic matching': function(test) {
     test.expect(5);
