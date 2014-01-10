@@ -45,7 +45,8 @@ module.exports = function(grunt) {
   grunt.registerTask('test', ['jshint:gruntfile', 'jshint:lib', 'jshint:test', 'build-sync-tests', 'jshint:testsync', 'nodeunit']);
 
   grunt.registerTask('build-sync-tests', 'Build sync tests from async tests.', function() {
-    grunt.file.expand('test/*.js', '!test/*sync*').forEach(function(src) {
+    // grunt.file.expand('test/*.js', '!test/*sync*')
+    ['test/globule_test.js'].forEach(function(src) {
       var dest = src.replace(/(_test)/, '_sync$1');
       grunt.log.write('Creating ' + dest + '...');
       var s = grunt.file.read(src);
@@ -64,10 +65,13 @@ module.exports = function(grunt) {
         // Rename modules.
         /(^exports\['find)/gm,
         '$1Sync',
+        // Remove unnecessary vars.
+        /^var (?:async|sortFilepathsByPattern).*\n/gm,
+        // Remove unnecessary tests.
+        /  'return value'[\s\S]+?  },\n/g,
         // Rewrite async.series calls.
-        /var async = require\('async'\);\n+/,
-        /(\s*async\.series\(\[)/g,
-        /(\s*(?:\},\n\s+)?function\(next\) \{)/g,
+        /\s*async\.series\(\[/g,
+        /\s*(?:\},\n\s+)?function\(next\) \{/g,
         /(\},\n\s+\], test\.done\);)/g,
         '    test.done();',
         /\s*(next\(\);\n\s+\}\);)/g,
