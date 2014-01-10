@@ -59,8 +59,8 @@ exports['Globule'] = {
     g.on('end', function(actual) {
       test.deepEqual(actual, expected, 'end-emitted result set should be the same.');
       test.deepEqual(
-        sortFilepathsByPattern(filepaths, [1, 1]),
-        sortFilepathsByPattern(expected, [1, 1]),
+        sortFilepathsByPattern(filepaths, [2]),
+        sortFilepathsByPattern(expected, [2]),
         'match-emitted filepaths should be the same (but possibly out-of-order when multiple matches are found per pattern).');
       test.done();
     });
