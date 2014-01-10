@@ -59,12 +59,13 @@ module.exports = function(grunt) {
         /exports\['(?:Globule|event emitter)'[\s\S]+?\n\};\n+/g,
         // Remove global functions.
         /(\/\/[^\n]+\n)+function sortFilepathsByPattern[\s\S]+?\n\}\n+/g,
+        // Remove block comments.
+        /\/\*([\s\S]*?)\*\/\n+/g,
         // Rename modules.
         /(^exports\['find)/gm,
         '$1Sync',
         // Rewrite async.series calls.
-        /(var async = require\('async'\);)/,
-        '// $1',
+        /var async = require\('async'\);\n+/,
         /(\s*async\.series\(\[)/g,
         /(\s*(?:\},\n\s+)?function\(next\) \{)/g,
         /(\},\n\s+\], test\.done\);)/g,
