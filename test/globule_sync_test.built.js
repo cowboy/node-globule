@@ -195,17 +195,20 @@ exports['findSync'] = {
     test.done();
   },
   'options.matchBase': function(test) {
-    test.expect(3);
+    test.expect(4);
     var actual, expected;
     actual = globule.findSync('*.js');
     expected = [];
     test.deepEqual(actual, expected, 'should not matchBase (minimatch) by default.');
     actual = globule.findSync('*.js', {matchBase: true});
     expected = ['js/bar.js', 'js/foo.js'];
-    test.deepEqual(actual, expected, 'matchBase option should be passed through to minimatch.');
+    test.deepEqual(actual, expected, 'matchBase option should work with inclusions.');
     actual = globule.findSync('*.js', '*.css', {matchBase: true});
     expected = ['js/bar.js', 'js/foo.js', 'css/baz.css', 'css/qux.css'];
-    test.deepEqual(actual, expected, 'matchBase option should be passed through to minimatch.');
+    test.deepEqual(actual, expected, 'matchBase option should work with multiple inclusions.');
+    actual = globule.findSync('*.*', '!*.{css,txt,md}', {matchBase: true});
+    expected = ['js/bar.js', 'js/foo.js'];
+    test.deepEqual(actual, expected, 'matchBase option should work with exclusions.');
     test.done();
   },
   'options.srcBase': function(test) {

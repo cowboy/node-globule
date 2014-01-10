@@ -361,7 +361,7 @@ exports['find'] = {
     ], test.done);
   },
   'options.matchBase': function(test) {
-    test.expect(3);
+    test.expect(4);
     async.series([
       function(next) {
         globule.find('*.js', function(err, actual) {
@@ -373,14 +373,21 @@ exports['find'] = {
       function(next) {
         globule.find('*.js', {matchBase: true}, function(err, actual) {
           var expected = ['js/bar.js', 'js/foo.js'];
-          test.deepEqual(actual, expected, 'matchBase option should be passed through to minimatch.');
+          test.deepEqual(actual, expected, 'matchBase option should work with inclusions.');
           next();
         });
       },
       function(next) {
         globule.find('*.js', '*.css', {matchBase: true}, function(err, actual) {
           var expected = ['js/bar.js', 'js/foo.js', 'css/baz.css', 'css/qux.css'];
-          test.deepEqual(actual, expected, 'matchBase option should be passed through to minimatch.');
+          test.deepEqual(actual, expected, 'matchBase option should work with multiple inclusions.');
+          next();
+        });
+      },
+      function(next) {
+        globule.find('*.*', '!*.{css,txt,md}', {matchBase: true}, function(err, actual) {
+          var expected = ['js/bar.js', 'js/foo.js'];
+          test.deepEqual(actual, expected, 'matchBase option should work with exclusions.');
           next();
         });
       },
