@@ -47,7 +47,7 @@ exports['find'] = {
     });
     g.on('end', function(actual) {
       test.deepEqual(actual, expected, 'end-emitted result set should be the same.');
-      test.deepEqual(filepaths, expected, 'match-emitted filepaths should be the same.');
+      test.deepEqual(filepaths.sort(), expected.sort(), 'match-emitted filepaths should be the same (but possibly out-of-order when multiple matches are found per pattern).');
       test.done();
     });
   },
