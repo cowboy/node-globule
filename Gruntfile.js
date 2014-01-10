@@ -5,8 +5,8 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     nodeunit: {
-      async: ['test/*.js', '!test/*sync*.js'],
-      sync: ['test/*sync*.js'],
+      tests: ['test/*_test.js'],
+      tests_built: ['test/*_test.built.js'],
     },
     jshint: {
       options: {
@@ -14,20 +14,20 @@ module.exports = function(grunt) {
       },
       gruntfile: 'Gruntfile.js',
       lib: ['lib/**/*.js'],
-      test: ['test/*.js', '!test/*sync*.js'],
-      testsync: ['test/*sync*.js'],
+      tests: '<%= nodeunit.tests %>',
+      tests_built: '<%= nodeunit.tests_built %>',
     },
     watch: {
       gruntfile: {
-        files: '<%= jshint.gruntfile.src %>',
+        files: '<%= jshint.gruntfile %>',
         tasks: ['jshint:gruntfile']
       },
       lib: {
-        files: '<%= jshint.lib.src %>',
+        files: '<%= jshint.lib %>',
         tasks: ['jshint:lib', 'nodeunit']
       },
       test: {
-        files: '<%= jshint.test.src %>',
+        files: '<%= jshint.test %>',
         tasks: ['test']
       },
     },
@@ -41,13 +41,14 @@ module.exports = function(grunt) {
   // Default task.
   grunt.registerTask('default', ['test']);
 
-  // Lint, then build sync tests, then
-  grunt.registerTask('test', ['jshint:gruntfile', 'jshint:lib', 'jshint:test', 'build-sync-tests', 'jshint:testsync', 'nodeunit']);
+  // Lint, then build tests, then lint the built tests, then run tests.
+  grunt.registerTask('test', ['jshint:gruntfile', 'jshint:lib', 'jshint:tests', 'build-tests', 'jshint:tests_built', 'nodeunit']);
 
-  grunt.registerTask('build-sync-tests', 'Build sync tests from async tests.', function() {
+  // Build tests.
+  grunt.registerTask('build-tests', 'Build sync tests from async tests.', function() {
     // grunt.file.expand('test/*.js', '!test/*sync*')
     ['test/globule_test.js'].forEach(function(src) {
-      var dest = src.replace(/(_test)/, '_sync$1');
+      var dest = src.replace(/(_test)/, '_sync$1.built');
       grunt.log.write('Creating ' + dest + '...');
       var s = grunt.file.read(src);
       // Test to see if line endings will need to be Windows-ized.
