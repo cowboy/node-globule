@@ -27,7 +27,7 @@ module.exports = function(grunt) {
         tasks: ['jshint:lib', 'nodeunit']
       },
       test: {
-        files: '<%= jshint.test %>',
+        files: '<%= jshint.tests %>',
         tasks: ['test']
       },
     },
