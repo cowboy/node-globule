@@ -176,11 +176,11 @@ exports['findSync'] = {
     ];
     test.deepEqual(actual, expected, 'should match directories only.');
     actual = globule.findSync('**', {
-    arbitraryProp: /deepest/,
-    filter: function(filepath, options) {
-      return options.arbitraryProp.test(filepath);
-    }
-        });
+      arbitraryProp: /deepest/,
+      filter: function(filepath, options) {
+        return options.arbitraryProp.test(filepath);
+      }
+    });
     expected = [
       'deep/deeper/deepest',
       'deep/deeper/deepest/deepest.txt',

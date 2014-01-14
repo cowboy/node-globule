@@ -32,38 +32,44 @@ module.exports = function(grunt) {
       },
     },
     build_tests: {
-      globule_test: {
-        src: 'test/globule_test.js',
-        dest: 'test/globule_sync_test.built.js',
+      async_to_sync: {
+        expand: true,
+        src: 'test/{globule,mapping}_test.js',
+        rename: function(destpath, srcpath) {
+          return srcpath.replace(/(.+)(_test)(\.js)/, '$1_sync$2.built$3');
+        },
         options: {
           rules: [
-            // Remove entire modules.
-            /exports\['(?:Globule|event emitter)'[\s\S]+?\n\};\n+/g,
-            // Remove global functions.
-            /(\/\/[^\n]+\n)+function sortFilepathsByPattern[\s\S]+?\n\}\n+/g,
+            // Remove unnecessary modules.
+            /exports\['mapping[\s\S]+?};\n+/g,
             // Remove block comments.
             /\/\*([\s\S]*?)\*\/\n+/g,
-            // Rename modules.
-            /(^exports\['find)/gm,
-            '$1Sync',
             // Remove unnecessary vars.
-            /^var (?:async|sortFilepathsByPattern).*\n/gm,
+            /^var async.*\n/gm,
             // Remove unnecessary tests.
             /  'return value'[\s\S]+?  },\n/g,
-            // Rewrite async.series calls.
-            /\s*async\.series\(\[/g,
-            /\s*(?:\},\n\s+)?function\(next\) \{/g,
-            /(\},\n\s+\], test\.done\);)/g,
-            '    test.done();',
-            /\s*(next\(\);\n\s+\}\);)/g,
-            /(globule\.find)(\([\s\S]+?), function.*?\{/g,
-            '  actual = $1Sync$2);',
-            /var (?=expected)/g,
+            // Rename modules.
+            /(^exports\['[^']+)/gm,
+            '$1Sync',
+            // Initialize vars.
             /(\s*)(test\.expect.*)/g,
             '$1$2$1var actual, expected;',
-            // Fix indentation.
-            /^          /gm,
-            '    ',
+            /var (?=expected)/g,
+            // Rewrite async.series calls.
+            /\s*async\.series\(\[/g,
+            /\], test\.done\);/g,
+            'test.done();',
+            // Remove function(next) { ... } wrappers and re-indent.
+            /(\s+)function\(next\) \{\n([\s\S]+?\n)\1},\n/g,
+            function(_, indent, body) {
+              return body.replace(new RegExp('^' + indent, 'gm'), '  ');
+            },
+            // Rewrite async function calls to sync and re-indent.
+            /([^\n\S]+)(globule\.(?:find|findMapping))(\([\s\S]+?), function\(err, actual\) \{\n([\s\S]+?)\s+next\(\);\n\s+\}\);\n/g,
+            function(_, indent, fn, args, body) {
+              return indent + 'actual = ' + fn + 'Sync' + args + ');\n' +
+                body.replace(new RegExp('^' + indent, 'gm'), '  ') + '\n';
+            },
           ]
         },
       },
@@ -93,8 +99,8 @@ module.exports = function(grunt) {
       s = normalized;
       // I wanted to parse the AST, really. But this is SO MUCH EASIER.
       options.rules.forEach(function(re, i, arr) {
-        if (typeof re === 'string') { return; }
-        s = s.replace(re, typeof arr[i + 1] === 'string' ? arr[i + 1] : '');
+        if (!(re instanceof RegExp)) { return; }
+        s = s.replace(re, arr[i + 1] instanceof RegExp ? '' : arr[i + 1]);
       });
       s = '// THIS FILE WAS AUTO-GENERATED\n// FROM: ' + f.src + '\n// PLEASE DO NOT EDIT DIRECTLY */\n\n' + s;
       // Re-Windows-ize line endings.
