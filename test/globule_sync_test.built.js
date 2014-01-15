@@ -17,7 +17,7 @@ exports['findSync'] = {
     done();
   },
   'basic matching': function(test) {
-    test.expect(5);
+    test.expect(6);
     var actual, expected;
     actual = globule.findSync('**/*.js');
     expected = ['js/bar.js', 'js/foo.js'];
@@ -28,6 +28,9 @@ exports['findSync'] = {
     actual = globule.findSync(['**/*.js', '**/*.css']);
     expected = ['js/bar.js', 'js/foo.js', 'css/baz.css', 'css/qux.css'];
     test.deepEqual(actual, expected, 'array of patterns should match.');
+    actual = globule.findSync({src: ['**/*.js', '**/*.css']});
+    expected = ['js/bar.js', 'js/foo.js', 'css/baz.css', 'css/qux.css'];
+    test.deepEqual(actual, expected, 'src option should match.');
     actual = globule.findSync([['**/*.js'], [['**/*.css', 'js/*.js']]]);
     expected = ['js/bar.js', 'js/foo.js', 'css/baz.css', 'css/qux.css'];
     test.deepEqual(actual, expected, 'array of arrays of patterns should be flattened.');

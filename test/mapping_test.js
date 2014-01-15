@@ -24,21 +24,26 @@ var async = require('async');
 var globule = require('../lib/globule.js');
 
 exports['mapping'] = {
-  'basic mapping': function(test) {
-    test.expect(1);
-
-    var actual = globule.mapping(['a.txt', 'b.txt', 'c.txt']);
+  'same-to-same mappings (default options)': function(test) {
+    test.expect(4);
+    var actual;
     var expected = [
       {dest: 'a.txt', src: ['a.txt']},
       {dest: 'b.txt', src: ['b.txt']},
       {dest: 'c.txt', src: ['c.txt']},
     ];
-    test.deepEqual(actual, expected, 'default options should create same-to-same src-dest mappings.');
-
+    actual = globule.mapping(['a.txt', 'b.txt', 'c.txt']);
+    test.deepEqual(actual, expected, 'array of patterns should work.');
+    actual = globule.mapping([['a.txt', ['b.txt', 'c.txt']]]);
+    test.deepEqual(actual, expected, 'nested arrays should be flattened.');
+    actual = globule.mapping('a.txt', 'b.txt', 'c.txt');
+    test.deepEqual(actual, expected, 'multiple pattern arguments should work.');
+    actual = globule.mapping({src: ['a.txt', 'b.txt', 'c.txt']});
+    test.deepEqual(actual, expected, 'src option should work.');
     test.done();
   },
   'options.srcBase': function(test) {
-    test.expect(2);
+    test.expect(3);
     var actual, expected;
     actual = globule.mapping(['a.txt', 'bar/b.txt', 'bar/baz/c.txt'], {srcBase: 'foo'});
     expected = [
@@ -50,6 +55,9 @@ exports['mapping'] = {
 
     actual = globule.mapping(['a.txt', 'bar/b.txt', 'bar/baz/c.txt'], {srcBase: 'foo/'});
     test.deepEqual(actual, expected, 'srcBase should be prefixed to src paths (trailing /).');
+
+    actual = globule.mapping({src: ['a.txt', 'bar/b.txt', 'bar/baz/c.txt'], srcBase: 'foo/'});
+    test.deepEqual(actual, expected, 'should also work when specifying src as option.');
 
     test.done();
   },

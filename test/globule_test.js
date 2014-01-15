@@ -43,7 +43,7 @@ exports['find'] = {
     test.done();
   },
   'basic matching': function(test) {
-    test.expect(5);
+    test.expect(6);
     async.series([
       function(next) {
         globule.find('**/*.js', function(err, actual) {
@@ -63,6 +63,13 @@ exports['find'] = {
         globule.find(['**/*.js', '**/*.css'], function(err, actual) {
           var expected = ['js/bar.js', 'js/foo.js', 'css/baz.css', 'css/qux.css'];
           test.deepEqual(actual, expected, 'array of patterns should match.');
+          next();
+        });
+      },
+      function(next) {
+        globule.find({src: ['**/*.js', '**/*.css']}, function(err, actual) {
+          var expected = ['js/bar.js', 'js/foo.js', 'css/baz.css', 'css/qux.css'];
+          test.deepEqual(actual, expected, 'src option should match.');
           next();
         });
       },
