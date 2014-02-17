@@ -22,8 +22,8 @@
 
 var globule = require('../lib/globule.js');
 
-// When comparing "match" emitted results, per-pattern filepaths are often
-// emitted out-of-order. So first group them by pattern, then sort, then
+// When comparing unsorted results, per-pattern filepaths are often collected
+// (and emitted) out-of-order. So first group them by pattern, then sort, then
 // build the result array. This is a more realistic comparison than just
 // sorting the entire array.
 function sortFilepathsByPattern(filepaths, lengths) {
@@ -55,10 +55,7 @@ exports['Globule'] = {
     });
     g.on('end', function(actual) {
       test.deepEqual(actual, expected, 'end-emitted result set should be the same.');
-      test.deepEqual(
-        sortFilepathsByPattern(filepaths, [2]),
-        sortFilepathsByPattern(expected, [2]),
-        'match-emitted filepaths should be the same (but possibly out-of-order when multiple matches are found per pattern).');
+      test.deepEqual(filepaths, expected, 'match-emitted filepaths should be the same.');
       test.done();
     });
   },
@@ -143,10 +140,33 @@ exports['event emitter'] = {
     });
     g.on('end', function(actual) {
       test.deepEqual(actual, expected, 'end-emitted result set should be the same.');
+      test.deepEqual(filepaths, expected, 'match-emitted filepaths should be the same.');
+      test.done();
+    });
+  },
+  'event emitter (nosort)': function(test) {
+    test.expect(2);
+    var expected = [
+      'README.md', 'deep/deep.txt', 'deep/deeper/deeper.txt', 'deep/deeper/deepest/deepest.txt',
+      'css/baz.css', 'css/qux.css', 'js/bar.js', 'js/foo.js',
+      'css/', 'deep/', 'deep/deeper/', 'deep/deeper/deepest/', 'js/',
+    ];
+    var g = new globule.Globule(['**/*.{txt,md}', '**/*.{js,css}', '**/'], {nosort: true});
+    var filepaths = [];
+    g.on('match', function(filepath) {
+      filepaths.push(filepath);
+      g.pause();
+      setTimeout(g.resume.bind(g), 50);
+    });
+    g.on('end', function(actual) {
+      test.deepEqual(
+        sortFilepathsByPattern(actual, [4, 4, 5]),
+        sortFilepathsByPattern(expected, [4, 4, 5]),
+        'end-emitted result set should be the same (but out-of-order).');
       test.deepEqual(
         sortFilepathsByPattern(filepaths, [4, 4, 5]),
         sortFilepathsByPattern(expected, [4, 4, 5]),
-        'match-emitted filepaths should be the same (but possibly out-of-order when multiple matches are found per pattern).');
+        'match-emitted filepaths should be the same (but out-of-order).');
       test.done();
     });
   },
