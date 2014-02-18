@@ -41,7 +41,7 @@ module.exports = function(grunt) {
         options: {
           rules: [
             // Remove unnecessary modules.
-            /exports\['mapping[\s\S]+?};\n+/g,
+            /exports\['mapping[\s\S]+?\n};\n+/g,
             // Remove block comments.
             /\/\*([\s\S]*?)\*\/\n+/g,
             // Remove unnecessary vars.
