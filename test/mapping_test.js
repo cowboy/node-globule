@@ -142,21 +142,66 @@ exports['mapping'] = {
 
     test.done();
   },
-  'options.rename': function(test) {
+  'options.rename (dest)': function(test) {
     test.expect(1);
     var actual, expected;
     actual = globule.mapping(['a.txt', 'bar/b.txt', 'bar/baz/c.txt'], {
-      arbitraryProp: 'FOO',
-      rename: function(dest, options) {
-        return options.arbitraryProp + '/' + dest.toUpperCase();
-      }
+      srcBase: 'in/',
+      notDestBase: 'out/',
+      rename: function(filepath, options) {
+        return options.notDestBase + filepath;
+      },
     });
     expected = [
-      {dest: 'FOO/A.TXT', src: ['a.txt']},
-      {dest: 'FOO/BAR/B.TXT', src: ['bar/b.txt']},
-      {dest: 'FOO/BAR/BAZ/C.TXT', src: ['bar/baz/c.txt']},
+      {src: ['in/a.txt'], dest: 'out/a.txt'},
+      {src: ['in/bar/b.txt'], dest: 'out/bar/b.txt'},
+      {src: ['in/bar/baz/c.txt'], dest: 'out/bar/baz/c.txt'},
     ];
-    test.deepEqual(actual, expected, 'allow arbitrary renaming of files.');
+    test.deepEqual(actual, expected, 'returned string is dest, srcBase should be prepended because rename fn returns dest only.');
+
+    test.done();
+  },
+  'options.rename (src string + dest)': function(test) {
+    test.expect(1);
+    var actual, expected;
+    actual = globule.mapping(['a.txt', 'bar/b.txt', 'bar/baz/c.txt'], {
+      srcBase: 'in/',
+      notDestBase: 'out/',
+      rename: function(filepath, options) {
+        return {
+          src: filepath,
+          dest: options.notDestBase + filepath,
+        };
+      },
+    });
+    expected = [
+      {src: ['a.txt'], dest: 'out/a.txt'},
+      {src: ['bar/b.txt'], dest: 'out/bar/b.txt'},
+      {src: ['bar/baz/c.txt'], dest: 'out/bar/baz/c.txt'},
+    ];
+    test.deepEqual(actual, expected, 'returned src + dest, srcBase should be ignored because rename fn returns src.');
+
+    test.done();
+  },
+  'options.rename (src array + dest)': function(test) {
+    test.expect(1);
+    var actual, expected;
+    actual = globule.mapping(['a.txt', 'bar/b.txt', 'bar/baz/c.txt'], {
+      srcBase: 'in/',
+      arbitraryProp: 'out/',
+      rename: function(filepath, options) {
+        return {
+          src: ['header.txt', filepath],
+          dest: options.arbitraryProp + filepath,
+        };
+      },
+    });
+    expected = [
+      {src: ['header.txt', 'a.txt'], dest: 'out/a.txt'},
+      {src: ['header.txt', 'bar/b.txt'], dest: 'out/bar/b.txt'},
+      {src: ['header.txt', 'bar/baz/c.txt'], dest: 'out/bar/baz/c.txt'},
+    ];
+    test.deepEqual(actual, expected, 'returned src array + dest, srcBase should be ignored because rename fn returns src.');
 
     test.done();
   },
