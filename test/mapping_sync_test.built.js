@@ -55,8 +55,8 @@ exports['findMappingSync'] = {
     actual = globule.findMappingSync('**/*.{js,css,txt}', {
       srcBase: 'expand',
       filter: 'isFile',
-      rename: function(dest) {
-        return 'build/all.' + dest.split('.').slice(-1);
+      rename: function(filepath) {
+        return 'build/all.' + filepath.split('.').slice(-1);
       },
     });
     test.deepEqual(actual, expected, 'multiple src files are grouped into a per-dest array when renamed dest is same');
