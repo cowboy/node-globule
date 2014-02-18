@@ -146,10 +146,12 @@ exports['mapping'] = {
     test.expect(1);
     var actual, expected;
     actual = globule.mapping(['a.txt', 'bar/b.txt', 'bar/baz/c.txt'], {
-      srcBase: 'in/',
-      notDestBase: 'out/',
+      srcBase: 'in',
+      destBase: 'out',
+      // You could comment out this rename function and it would work
+      // the same, given the specified options.
       rename: function(filepath, options) {
-        return options.notDestBase + filepath;
+        return options.destBase + '/' + filepath;
       },
     });
     expected = [
@@ -157,7 +159,7 @@ exports['mapping'] = {
       {src: ['in/bar/b.txt'], dest: 'out/bar/b.txt'},
       {src: ['in/bar/baz/c.txt'], dest: 'out/bar/baz/c.txt'},
     ];
-    test.deepEqual(actual, expected, 'returned string is dest, srcBase should be prepended because rename fn returns dest only.');
+    test.deepEqual(actual, expected, 'destBase must be prefixed manually when rename fn returns dest, srcBase should be auto-prefixed.');
 
     test.done();
   },
@@ -165,21 +167,21 @@ exports['mapping'] = {
     test.expect(1);
     var actual, expected;
     actual = globule.mapping(['a.txt', 'bar/b.txt', 'bar/baz/c.txt'], {
-      srcBase: 'in/',
-      notDestBase: 'out/',
+      srcBase: 'in',
+      destBase: 'out',
       rename: function(filepath, options) {
         return {
-          src: filepath,
-          dest: options.notDestBase + filepath,
+          src: options.srcBase + '-alt/' + filepath,
+          dest: options.destBase + '/' + filepath,
         };
       },
     });
     expected = [
-      {src: ['a.txt'], dest: 'out/a.txt'},
-      {src: ['bar/b.txt'], dest: 'out/bar/b.txt'},
-      {src: ['bar/baz/c.txt'], dest: 'out/bar/baz/c.txt'},
+      {src: ['in-alt/a.txt'], dest: 'out/a.txt'},
+      {src: ['in-alt/bar/b.txt'], dest: 'out/bar/b.txt'},
+      {src: ['in-alt/bar/baz/c.txt'], dest: 'out/bar/baz/c.txt'},
     ];
-    test.deepEqual(actual, expected, 'returned src + dest, srcBase should be ignored because rename fn returns src.');
+    test.deepEqual(actual, expected, 'returned src + dest, srcBase must be prefixed manually when rename fn returns src (same with destBase).');
 
     test.done();
   },
@@ -187,21 +189,21 @@ exports['mapping'] = {
     test.expect(1);
     var actual, expected;
     actual = globule.mapping(['a.txt', 'bar/b.txt', 'bar/baz/c.txt'], {
-      srcBase: 'in/',
-      arbitraryProp: 'out/',
+      srcBase: 'in',
+      destBase: 'out',
       rename: function(filepath, options) {
         return {
-          src: ['header.txt', filepath],
-          dest: options.arbitraryProp + filepath,
+          src: ['misc/header.txt', options.srcBase + '/' + filepath],
+          dest: options.destBase + '/' + filepath,
         };
       },
     });
     expected = [
-      {src: ['header.txt', 'a.txt'], dest: 'out/a.txt'},
-      {src: ['header.txt', 'bar/b.txt'], dest: 'out/bar/b.txt'},
-      {src: ['header.txt', 'bar/baz/c.txt'], dest: 'out/bar/baz/c.txt'},
+      {src: ['misc/header.txt', 'in/a.txt'], dest: 'out/a.txt'},
+      {src: ['misc/header.txt', 'in/bar/b.txt'], dest: 'out/bar/b.txt'},
+      {src: ['misc/header.txt', 'in/bar/baz/c.txt'], dest: 'out/bar/baz/c.txt'},
     ];
-    test.deepEqual(actual, expected, 'returned src array + dest, srcBase should be ignored because rename fn returns src.');
+    test.deepEqual(actual, expected, 'returned src array + dest, srcBase must be prefixed manually when rename fn returns src (same with destBase).');
 
     test.done();
   },
