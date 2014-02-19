@@ -198,7 +198,7 @@ exports['findSync'] = {
     test.done();
   },
   'options.matchBase': function(test) {
-    test.expect(4);
+    test.expect(5);
     var actual, expected;
     actual = globule.findSync('*.js');
     expected = [];
@@ -212,37 +212,43 @@ exports['findSync'] = {
     actual = globule.findSync('*.*', '!*.{css,txt,md}', {matchBase: true});
     expected = ['js/bar.js', 'js/foo.js'];
     test.deepEqual(actual, expected, 'matchBase option should work with exclusions.');
+    actual = globule.findSync('deep/**', '!*.txt', {matchBase: true});
+    expected = ['deep', 'deep/deeper', 'deep/deeper/deepest'];
+    test.deepEqual(actual, expected, 'matchBase option should work with a mix of patterns containing and not containing slashes.');
     test.done();
   },
-  'options.srcBase': function(test) {
-    test.expect(5);
+  'options.srcBase (prefix path)': function(test) {
+    test.expect(4);
     var actual, expected;
     actual = globule.findSync(['**/deep*.txt'], {srcBase: 'deep'});
-    expected = ['deep.txt', 'deeper/deeper.txt', 'deeper/deepest/deepest.txt'];
-    test.deepEqual(actual, expected, 'should find paths matching pattern relative to srcBase.');
-    actual = globule.findSync(['**/deep*.txt'], {cwd: 'deep'});
-    expected = ['deep.txt', 'deeper/deeper.txt', 'deeper/deepest/deepest.txt'];
-    test.deepEqual(actual, expected, 'cwd and srcBase should do the same thing.');
+    expected = ['deep/deep.txt', 'deep/deeper/deeper.txt', 'deep/deeper/deepest/deepest.txt'];
+    test.deepEqual(actual, expected, 'should find paths matching pattern relative to srcBase and prefix srcBase to result paths.');
     actual = globule.findSync(['**/deep*'], {srcBase: 'deep', filter: 'isFile'});
-    expected = ['deep.txt', 'deeper/deeper.txt', 'deeper/deepest/deepest.txt'];
+    expected = ['deep/deep.txt', 'deep/deeper/deeper.txt', 'deep/deeper/deepest/deepest.txt'];
     test.deepEqual(actual, expected, 'srcBase should not prevent filtering.');
     actual = globule.findSync(['**/deep*'], {srcBase: 'deep', filter: 'isDirectory'});
-    expected = ['deeper', 'deeper/deepest'];
+    expected = ['deep/deeper', 'deep/deeper/deepest'];
     test.deepEqual(actual, expected, 'srcBase should not prevent filtering.');
     actual = globule.findSync(['**/deep*.txt', '!**/deeper**'], {srcBase: 'deep'});
-    expected = ['deep.txt', 'deeper/deepest/deepest.txt'];
+    expected = ['deep/deep.txt', 'deep/deeper/deepest/deepest.txt'];
     test.deepEqual(actual, expected, 'srcBase should not prevent exclusions.');
     test.done();
   },
-  'options.prefixBase': function(test) {
-    test.expect(2);
+  'options.cwd (no prefix path)': function(test) {
+    test.expect(4);
     var actual, expected;
-    actual = globule.findSync(['**/deep*.txt'], {srcBase: 'deep', prefixBase: false});
+    actual = globule.findSync(['**/deep*.txt'], {cwd: 'deep'});
     expected = ['deep.txt', 'deeper/deeper.txt', 'deeper/deepest/deepest.txt'];
-    test.deepEqual(actual, expected, 'should not prefix srcBase to returned paths.');
-    actual = globule.findSync(['**/deep*.txt'], {srcBase: 'deep', prefixBase: true});
-    expected = ['deep/deep.txt', 'deep/deeper/deeper.txt', 'deep/deeper/deepest/deepest.txt'];
-    test.deepEqual(actual, expected, 'should prefix srcBase to returned paths.');
+    test.deepEqual(actual, expected, 'should find paths matching pattern relative to cwd but NOT prefix cwd to result paths.');
+    actual = globule.findSync(['**/deep*'], {cwd: 'deep', filter: 'isFile'});
+    expected = ['deep.txt', 'deeper/deeper.txt', 'deeper/deepest/deepest.txt'];
+    test.deepEqual(actual, expected, 'cwd should not prevent filtering.');
+    actual = globule.findSync(['**/deep*'], {cwd: 'deep', filter: 'isDirectory'});
+    expected = ['deeper', 'deeper/deepest'];
+    test.deepEqual(actual, expected, 'cwd should not prevent filtering.');
+    actual = globule.findSync(['**/deep*.txt', '!**/deeper**'], {cwd: 'deep'});
+    expected = ['deep.txt', 'deeper/deepest/deepest.txt'];
+    test.deepEqual(actual, expected, 'cwd should not prevent exclusions.');
     test.done();
   },
   'options.nonull': function(test) {

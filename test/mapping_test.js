@@ -241,6 +241,28 @@ exports['findMapping'] = {
       },
     ], test.done);
   },
+  'options.cwd': function(test) {
+    test.expect(2);
+    var expected = [
+      {dest: 'dest/deep.txt', src: ['deep.txt']},
+      {dest: 'dest/deeper/deeper.txt', src: ['deeper/deeper.txt']},
+      {dest: 'dest/deeper/deepest/deepest.txt', src: ['deeper/deepest/deepest.txt']},
+    ];
+    async.series([
+      function(next) {
+        globule.findMapping(['**/*.txt'], {destBase: 'dest', cwd: 'expand/deep'}, function(err, actual) {
+          test.deepEqual(actual, expected, 'cwd should be stripped from front of destPath, pre-destBase+destPath join');
+          next();
+        });
+      },
+      function(next) {
+        globule.findMapping({src: ['**/*.txt'], destBase: 'dest', cwd: 'expand/deep'}, function(err, actual) {
+          test.deepEqual(actual, expected, 'should also work with src as option.');
+          next();
+        });
+      },
+    ], test.done);
+  },
   'options.srcBase': function(test) {
     test.expect(2);
     var expected = [

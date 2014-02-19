@@ -47,7 +47,7 @@ exports['Globule'] = {
   'constructor': function(test) {
     test.expect(3);
     var expected = ['bar.js', 'foo.js'];
-    var g = new globule.Globule(['*.js'], {srcBase: 'js'}, function(err, actual) {
+    var g = new globule.Globule(['*.js'], {cwd: 'js'}, function(err, actual) {
       test.deepEqual(actual, expected, 'callback result set should be the same.');
     });
     var filepaths = [];

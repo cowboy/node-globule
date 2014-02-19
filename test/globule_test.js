@@ -368,7 +368,7 @@ exports['find'] = {
     ], test.done);
   },
   'options.matchBase': function(test) {
-    test.expect(4);
+    test.expect(5);
     async.series([
       function(next) {
         globule.find('*.js', function(err, actual) {
@@ -398,62 +398,76 @@ exports['find'] = {
           next();
         });
       },
-    ], test.done);
-  },
-  'options.srcBase': function(test) {
-    test.expect(5);
-    async.series([
       function(next) {
-        globule.find(['**/deep*.txt'], {srcBase: 'deep'}, function(err, actual) {
-          var expected = ['deep.txt', 'deeper/deeper.txt', 'deeper/deepest/deepest.txt'];
-          test.deepEqual(actual, expected, 'should find paths matching pattern relative to srcBase.');
+        globule.find('deep/**', '!*.txt', {matchBase: true}, function(err, actual) {
+          var expected = ['deep', 'deep/deeper', 'deep/deeper/deepest'];
+          test.deepEqual(actual, expected, 'matchBase option should work with a mix of patterns containing and not containing slashes.');
           next();
         });
       },
+    ], test.done);
+  },
+  'options.srcBase (prefix path)': function(test) {
+    test.expect(4);
+    async.series([
       function(next) {
-        globule.find(['**/deep*.txt'], {cwd: 'deep'}, function(err, actual) {
-          var expected = ['deep.txt', 'deeper/deeper.txt', 'deeper/deepest/deepest.txt'];
-          test.deepEqual(actual, expected, 'cwd and srcBase should do the same thing.');
+        globule.find(['**/deep*.txt'], {srcBase: 'deep'}, function(err, actual) {
+          var expected = ['deep/deep.txt', 'deep/deeper/deeper.txt', 'deep/deeper/deepest/deepest.txt'];
+          test.deepEqual(actual, expected, 'should find paths matching pattern relative to srcBase and prefix srcBase to result paths.');
           next();
         });
       },
       function(next) {
         globule.find(['**/deep*'], {srcBase: 'deep', filter: 'isFile'}, function(err, actual) {
-          var expected = ['deep.txt', 'deeper/deeper.txt', 'deeper/deepest/deepest.txt'];
+          var expected = ['deep/deep.txt', 'deep/deeper/deeper.txt', 'deep/deeper/deepest/deepest.txt'];
           test.deepEqual(actual, expected, 'srcBase should not prevent filtering.');
           next();
         });
       },
       function(next) {
         globule.find(['**/deep*'], {srcBase: 'deep', filter: 'isDirectory'}, function(err, actual) {
-          var expected = ['deeper', 'deeper/deepest'];
+          var expected = ['deep/deeper', 'deep/deeper/deepest'];
           test.deepEqual(actual, expected, 'srcBase should not prevent filtering.');
           next();
         });
       },
       function(next) {
         globule.find(['**/deep*.txt', '!**/deeper**'], {srcBase: 'deep'}, function(err, actual) {
-          var expected = ['deep.txt', 'deeper/deepest/deepest.txt'];
+          var expected = ['deep/deep.txt', 'deep/deeper/deepest/deepest.txt'];
           test.deepEqual(actual, expected, 'srcBase should not prevent exclusions.');
           next();
         });
       },
     ], test.done);
   },
-  'options.prefixBase': function(test) {
-    test.expect(2);
+  'options.cwd (no prefix path)': function(test) {
+    test.expect(4);
     async.series([
       function(next) {
-        globule.find(['**/deep*.txt'], {srcBase: 'deep', prefixBase: false}, function(err, actual) {
+        globule.find(['**/deep*.txt'], {cwd: 'deep'}, function(err, actual) {
           var expected = ['deep.txt', 'deeper/deeper.txt', 'deeper/deepest/deepest.txt'];
-          test.deepEqual(actual, expected, 'should not prefix srcBase to returned paths.');
+          test.deepEqual(actual, expected, 'should find paths matching pattern relative to cwd but NOT prefix cwd to result paths.');
           next();
         });
       },
       function(next) {
-        globule.find(['**/deep*.txt'], {srcBase: 'deep', prefixBase: true}, function(err, actual) {
-          var expected = ['deep/deep.txt', 'deep/deeper/deeper.txt', 'deep/deeper/deepest/deepest.txt'];
-          test.deepEqual(actual, expected, 'should prefix srcBase to returned paths.');
+        globule.find(['**/deep*'], {cwd: 'deep', filter: 'isFile'}, function(err, actual) {
+          var expected = ['deep.txt', 'deeper/deeper.txt', 'deeper/deepest/deepest.txt'];
+          test.deepEqual(actual, expected, 'cwd should not prevent filtering.');
+          next();
+        });
+      },
+      function(next) {
+        globule.find(['**/deep*'], {cwd: 'deep', filter: 'isDirectory'}, function(err, actual) {
+          var expected = ['deeper', 'deeper/deepest'];
+          test.deepEqual(actual, expected, 'cwd should not prevent filtering.');
+          next();
+        });
+      },
+      function(next) {
+        globule.find(['**/deep*.txt', '!**/deeper**'], {cwd: 'deep'}, function(err, actual) {
+          var expected = ['deep.txt', 'deeper/deepest/deepest.txt'];
+          test.deepEqual(actual, expected, 'cwd should not prevent exclusions.');
           next();
         });
       },

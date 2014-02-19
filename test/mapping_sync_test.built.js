@@ -30,6 +30,20 @@ exports['findMappingSync'] = {
     test.deepEqual(actual, expected, 'should also work when specifying src as option.');
     test.done();
   },
+  'options.cwd': function(test) {
+    test.expect(2);
+    var actual, expected;
+    expected = [
+      {dest: 'dest/deep.txt', src: ['deep.txt']},
+      {dest: 'dest/deeper/deeper.txt', src: ['deeper/deeper.txt']},
+      {dest: 'dest/deeper/deepest/deepest.txt', src: ['deeper/deepest/deepest.txt']},
+    ];
+    actual = globule.findMappingSync(['**/*.txt'], {destBase: 'dest', cwd: 'expand/deep'});
+    test.deepEqual(actual, expected, 'cwd should be stripped from front of destPath, pre-destBase+destPath join');
+    actual = globule.findMappingSync({src: ['**/*.txt'], destBase: 'dest', cwd: 'expand/deep'});
+    test.deepEqual(actual, expected, 'should also work with src as option.');
+    test.done();
+  },
   'options.srcBase': function(test) {
     test.expect(2);
     var actual, expected;
