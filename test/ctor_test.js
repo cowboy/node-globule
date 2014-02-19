@@ -20,6 +20,7 @@
     test.ifError(value)
 */
 
+var _ = require('lodash');
 var globule = require('../lib/globule.js');
 
 // When comparing unsorted results, per-pattern filepaths are often collected
@@ -72,16 +73,61 @@ exports['event emitter'] = {
     done();
   },
   'event emitter': function(test) {
-    test.expect(2);
-    var g = new globule.Globule(['**/*.js', '!js/bar.js', '**/*.css', '!css/baz.css', 'js/foo.js']);
-    var expected = ['js/foo.js', 'css/qux.css'];
-    var filepaths = [];
+    test.expect(19);
+    // Globule patterns along with events to-be-emitted (in-order).
+    var everything = [
+      '**/*.js',        {match: 'js/foo.js'},
+                        {hit: [['js/foo.js'], [], '**/*.js']},
+      '!**/b*.js',      // exclusions affect preceding inclusions and don't trigger events
+      '**/*.js',        {match: 'js/bar.js'},
+                        {hit: [['js/bar.js'], ['js/foo.js'], '**/*.js']},
+      '**/*.js',        {hit: [[], ['js/bar.js', 'js/foo.js'], '**/*.js']}, // all duplicates
+      '**/*.fail',      {miss: '**/*.fail'},
+      '**/q*.css',      {match: 'css/qux.css'},
+                        {hit: [['css/qux.css'], [], '**/q*.css']},
+      '**/*.css',       {match: 'css/baz.css'},
+                        {hit: [['css/baz.css'], ['css/qux.css'], '**/*.css']},
+      '**/*.css',       {hit: [[], ['css/baz.css', 'css/qux.css'], '**/*.css']}, // all duplicates
+      '**/deeper.txt',  {match: 'deep/deeper/deeper.txt'},
+                        {hit: [['deep/deeper/deeper.txt'], [], '**/deeper.txt']},
+      '**/*.txt',       {match: 'deep/deep.txt'},
+                        {match: 'deep/deeper/deepest/deepest.txt'},
+                        {hit: [['deep/deep.txt', 'deep/deeper/deepest/deepest.txt'], ['deep/deeper/deeper.txt'], '**/*.txt']},
+      '**/*.txt',       {hit: [[], ['deep/deep.txt', 'deep/deeper/deeper.txt', 'deep/deeper/deepest/deepest.txt'], '**/*.txt']}, // all duplicates
+    ];
+
+    var expectedEvents = _.filter(everything, _.isObject);
+    var nextExpectedEvent = Array.prototype.shift.bind(expectedEvents);
+
+    var expectedFiles = [
+      'js/foo.js',
+      'js/bar.js',
+      'css/qux.css',
+      'css/baz.css',
+      'deep/deeper/deeper.txt',
+      'deep/deep.txt',
+      'deep/deeper/deepest/deepest.txt',
+    ];
+    var actualMatchFiles = [];
+
+    var patterns = _.filter(everything, _.isString);
+    var g = new globule.Globule(patterns);
     g.on('match', function(filepath) {
-      filepaths.push(filepath);
+      actualMatchFiles.push(filepath);
+      var actual = {match: filepath};
+      test.deepEqual(actual, nextExpectedEvent(), 'match event should receive filepath string.');
     });
-    g.on('end', function(actual) {
-      test.deepEqual(actual, expected, 'end-emitted result set should be the same.');
-      test.deepEqual(filepaths, expected, 'match-emitted filepaths should be the same.');
+    g.on('hit', function(data) {
+      var actual = {hit: [data.matches, data.dupes, data.pattern]};
+      test.deepEqual(actual, nextExpectedEvent(), 'hit event should receive object with matches array, dupes array, and pattern string properties.');
+    });
+    g.on('miss', function(data) {
+      var actual = {miss: data.pattern};
+      test.deepEqual(actual, nextExpectedEvent(), 'hit event should receive object with pattern string property.');
+    });
+    g.on('end', function(actualEndFiles) {
+      test.deepEqual(actualEndFiles, expectedFiles, 'end-emitted result set should be the same.');
+      test.deepEqual(actualMatchFiles, expectedFiles, 'match-emitted filepaths should be the same.');
       test.done();
     });
   },
