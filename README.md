@@ -1,16 +1,61 @@
 # globule [![Build Status](https://secure.travis-ci.org/cowboy/node-globule.png?branch=master)](http://travis-ci.org/cowboy/node-globule)
 
+
 An easy-to-use wildcard globbing library.
 
-## Getting Started
-Install the module with: `npm install globule`
+_This library is a wrapper around the [glob][] library that provides multi-pattern support (both inclusions and exclusions), filtering using [fs.Stats method name][] or arbitrary function, additional `hit` and `miss` events, as well as source + destination file-mapping utility methods._
 
-```javascript
+## Usage
+
+Install the module with: `npm install globule`. Then:
+
+```js
 var globule = require('globule');
-var filepaths = globule.find('**/*.js');
+
+// Sync
+var filepaths = globule.findSync('lib/**/*.js', '!**/c*.js');
+
+// Async
+globule.find('**/!(c)*.js', {cwd: 'lib'}, function(err, filepaths) {
+  console.log('Matches', filepaths);
+});
+
+// Event Emitter
+globule.find({
+  src: ['*.txt', '!*st.txt', '*.{txt,js}', '*.fail', 'q*.css', '*.css'],
+  cwd: 'test/fixtures/expand',
+  matchBase: true,
+})
+.on('match', function(filepath) {
+  console.log('Match: %s', filepath);
+})
+.on('hit', function(data) {
+  console.log('Hit (%d/%d) %s\n', data.matches.length, data.dupes.length, data.pattern);
+})
+.on('miss', function(data) {
+  console.log('Miss %s\n', data.pattern);
+})
+.on('end', function(filepaths) {
+  console.log('Matches', filepaths);
+});
+
+// Mapping
+var fileMaps = globule.findMappingSync('**/*.{js,css,txt}', {
+  srcBase: 'source',
+  rename: function(filepath) {
+    return 'concat/all.' + filepath.split('.').slice(-1);
+  },
+});
 ```
 
+See the [examples](./examples) directory for more.
+
 ## Documentation
+
+### Important Notice
+The API has changed substantially between 0.x and 1.x. Mainly, the previously-synchronous methods `find` and `findMapping` have been renamed to `findSync` and `findMappingSync` and have been replaced with asynchronous `find` and `findMapping` methods which take a callback function.
+
+Also, in addition to accepting an optional "done" callback, the now-asynchronous `find` method returns an instance of [EventEmitter][].
 
 ### globule.find
 Returns a unique array of all file or directory paths that match the given globbing pattern(s). This method accepts either comma separated globbing patterns or an array of globbing patterns. Paths matching patterns that begin with `!` will be excluded from the returned array. Patterns are processed in order, so inclusion and exclusion order is significant. Patterns may be specified as function arguments or as a `src` property of the options object.
@@ -23,13 +68,14 @@ globule.find({src: patterns, /* other options */})
 The `options` object supports all [glob][] library options, along with a few extras. These are the most commonly used:
 
 * `src` This property may be used instead of specifying patterns as function arguments.
-* `filter` Either a valid [fs.Stats method name](http://nodejs.org/docs/latest/api/fs.html#fs_class_fs_stats) or a function that will be passed the matched `src` filepath and `options` object as arguments. This function should return a `Boolean` value.
+* `filter` Either a valid [fs.Stats method name][] or a function that will be passed the matched `src` filepath and `options` object as arguments. This function should return a `Boolean` value.
 * `nonull` Retain globbing patterns in result set even if they fail to match files.
 * `matchBase` Patterns without slashes will match just the basename part. Eg. this makes `*.js` work like `**/*.js`.
 * `srcBase` Patterns will be matched relative to the specified path instead of the current working directory. This is a synonym for `cwd`.
 * `prefixBase` Any specified `srcBase` will be prefixed to all returned filepaths.
 
-[glob]: https://github.com/isaacs/node-glob
+### globule.findSync
+Like `globule.find` but synchronous. Instead of returning an [EventEmitter][], returns an array of matched files.
 
 ### globule.match
 Match one or more globbing patterns against one or more file paths. Returns a uniqued array of all file paths that match any of the specified globbing patterns. Both the `patterns` and `filepaths` arguments can be a single string or array of strings. Paths matching patterns that begin with `!` will be excluded from the returned array. Patterns are processed in order, so inclusion and exclusion order is significant.
@@ -125,3 +171,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 ## License
 Copyright (c) 2014 "Cowboy" Ben Alman  
 Licensed under the MIT license.
+
+[glob]: https://github.com/isaacs/node-glob
+[EventEmitter]: http://nodejs.org/api/events.html#events_class_events_eventemitter
+[fs.Stats method name]: http://nodejs.org/docs/latest/api/fs.html#fs_class_fs_stats
