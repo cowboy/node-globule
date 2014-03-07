@@ -107,7 +107,7 @@ exports['mapping'] = {
     test.done();
   },
   'options.ext': function(test) {
-    test.expect(1);
+    test.expect(2);
     var actual, expected;
 
     actual = globule.mapping(['x/a.js', 'x.y/b.min.js', 'x.y/z.z/c'], {ext: '.foo'});
@@ -117,6 +117,14 @@ exports['mapping'] = {
       {dest: 'x.y/z.z/c.foo', src: ['x.y/z.z/c']},
     ];
     test.deepEqual(actual, expected, 'by default, ext should replace everything after the first dot in the filename.');
+
+    actual = globule.mapping(['x/a.js', 'x.y/b.min.js', 'x.y/z.z/c'], {ext: ''});
+    expected = [
+      {dest: 'x/a', src: ['x/a.js']},
+      {dest: 'x.y/b', src: ['x.y/b.min.js']},
+      {dest: 'x.y/z.z/c', src: ['x.y/z.z/c']},
+    ];
+    test.deepEqual(actual, expected, 'empty string ext should strip extension.');
 
     test.done();
   },
