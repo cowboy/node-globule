@@ -474,7 +474,7 @@ exports['find'] = {
     ], test.done);
   },
   'options.nonull': function(test) {
-    test.expect(3);
+    test.expect(4);
     async.series([
       function(next) {
         globule.find(['*omg*'], {nonull: true}, function(err, actual) {
@@ -494,6 +494,13 @@ exports['find'] = {
         globule.find(['js/foo.js', 'js/bar.js', 'js/nonexistent.js'], {nonull: true}, function(err, actual) {
           var expected = ['js/foo.js', 'js/bar.js', 'js/nonexistent.js'];
           test.deepEqual(actual, expected, 'non-matching filenames should be returned in result set.');
+          next();
+        });
+      },
+      function(next) {
+        globule.find(['js/*.js', 'js/*.{a,b,c}'], {nonull: true}, function(err, actual) {
+          var expected = ['js/bar.js', 'js/foo.js', 'js/*.{a,b,c}'];
+          test.deepEqual(actual, expected, 'non-matching patterns containing {} should be returned in result set.');
           next();
         });
       },

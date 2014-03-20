@@ -252,7 +252,7 @@ exports['findSync'] = {
     test.done();
   },
   'options.nonull': function(test) {
-    test.expect(3);
+    test.expect(4);
     var actual, expected;
     actual = globule.findSync(['*omg*'], {nonull: true});
     expected = ['*omg*'];
@@ -263,6 +263,9 @@ exports['findSync'] = {
     actual = globule.findSync(['js/foo.js', 'js/bar.js', 'js/nonexistent.js'], {nonull: true});
     expected = ['js/foo.js', 'js/bar.js', 'js/nonexistent.js'];
     test.deepEqual(actual, expected, 'non-matching filenames should be returned in result set.');
+    actual = globule.findSync(['js/*.js', 'js/*.{a,b,c}'], {nonull: true});
+    expected = ['js/bar.js', 'js/foo.js', 'js/*.{a,b,c}'];
+    test.deepEqual(actual, expected, 'non-matching patterns containing {} should be returned in result set.');
     test.done();
   },
 };
