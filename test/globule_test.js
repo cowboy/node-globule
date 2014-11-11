@@ -303,13 +303,21 @@ exports['find'] = {
     test.done();
   },
   'options.prefixBase': function(test) {
-    test.expect(2);
+    test.expect(3);
     test.deepEqual(globule.find(['**/deep*.txt'], {srcBase: 'deep', prefixBase: false}),
       ['deep.txt', 'deeper/deeper.txt', 'deeper/deepest/deepest.txt'],
       'should not prefix srcBase to returned paths.');
     test.deepEqual(globule.find(['**/deep*.txt'], {srcBase: 'deep', prefixBase: true}),
       ['deep/deep.txt', 'deep/deeper/deeper.txt', 'deep/deeper/deepest/deepest.txt'],
       'should prefix srcBase to returned paths.');
+    var dir = path.resolve(process.cwd());
+    test.deepEqual(globule.find([path.join(dir, '**/deep*.txt')], {srcBase: 'deep', prefixBase: true}),
+        [
+          path.join(dir, 'deep/deep.txt'),
+          path.join(dir, 'deep/deeper/deeper.txt'),
+          path.join(dir, 'deep/deeper/deepest/deepest.txt')
+        ],
+        'should not prefix srcBase to absolute paths.');
     test.done();
   },
   'options.nonull': function(test) {
