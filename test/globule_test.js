@@ -310,12 +310,12 @@ exports['find'] = {
     test.deepEqual(globule.find(['**/deep*.txt'], {srcBase: 'deep', prefixBase: true}),
       ['deep/deep.txt', 'deep/deeper/deeper.txt', 'deep/deeper/deepest/deepest.txt'],
       'should prefix srcBase to returned paths.');
-    var dir = path.resolve(process.cwd());
-    test.deepEqual(globule.find([path.join(dir, '**/deep*.txt')], {srcBase: 'deep', prefixBase: true}),
+    var dir = path.resolve('deep');
+    test.deepEqual(globule.find([path.join(dir, '**/deep*.txt')], {srcBase: dir, prefixBase: true}),
         [
-          path.join(dir, 'deep/deep.txt'),
-          path.join(dir, 'deep/deeper/deeper.txt'),
-          path.join(dir, 'deep/deeper/deepest/deepest.txt')
+          path.join(dir, 'deep.txt'),
+          path.join(dir, 'deeper/deeper.txt'),
+          path.join(dir, 'deeper/deepest/deepest.txt')
         ],
         'should not prefix srcBase to absolute paths.');
     test.done();
