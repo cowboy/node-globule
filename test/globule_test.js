@@ -186,7 +186,7 @@ exports['find'] = {
     test.done();
   },
   'exclusion': function(test) {
-    test.expect(8);
+    test.expect(10);
     test.deepEqual(globule.find(['!js/*.js']), [], 'solitary exclusion should match nothing');
     test.deepEqual(globule.find(['js/bar.js','!js/bar.js']), [], 'exclusion should negate match');
     test.deepEqual(globule.find(['**/*.js', '!js/foo.js']),
@@ -207,6 +207,12 @@ exports['find'] = {
     test.deepEqual(globule.find(['js/bar.js', '!**/b*.*', 'js/foo.js', 'css/baz.css', 'css/qux.css']),
       ['js/foo.js', 'css/baz.css', 'css/qux.css'],
       'inclusion / exclusion order matters');
+    test.deepEqual(globule.find([['js/bar.js'], ['!js/b*.*', 'js/foo.js']]),
+      ['js/bar.js', 'js/foo.js'],
+      'exclusion in subarray should not exclude from previous sub arrays');
+    test.deepEqual(globule.find([['js/bar.js'], ['js/foo.js', '!js/*']]),
+      ['js/bar.js'],
+      'exclusion in subarray should exclude from current sub arrays');
     test.done();
   },
   'options.src': function(test) {

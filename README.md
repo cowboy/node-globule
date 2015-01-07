@@ -13,7 +13,7 @@ var filepaths = globule.find('**/*.js');
 ## Documentation
 
 ### globule.find
-Returns a unique array of all file or directory paths that match the given globbing pattern(s). This method accepts either comma separated globbing patterns or an array of globbing patterns. Paths matching patterns that begin with `!` will be excluded from the returned array. Patterns are processed in order, so inclusion and exclusion order is significant. Patterns may be specified as function arguments or as a `src` property of the options object.
+Returns a unique array of all file or directory paths that match the given globbing pattern(s). This method accepts either comma separated globbing patterns, an array of globbing patterns, or an array of arrays of globbing patterns. Paths matching patterns that begin with `!` will be excluded from the returned array. Patterns are processed in order, so inclusion and exclusion order is significant. Patterns may be specified as function arguments or as a `src` property of the options object. If you specify patterns inside arrays of arrays, each level will glob together, and the results will be flattened without duplicates.
 
 ```js
 globule.find(patterns [, patterns [, ...]] [, options])
@@ -30,6 +30,13 @@ The `options` object supports all [glob][] library options, along with a few ext
 * `prefixBase` Any specified `srcBase` will be prefixed to all returned filepaths.
 
 [glob]: https://github.com/isaacs/node-glob
+
+**Note:** Patterns as arrays of arrays are useful if you want to negate only in part of your glob results.
+
+```js
+globule.find([['**/*.js'], ['**/*.html', '!**/excl/**/*']])
+```
+In this example, `excl/a.js` will be matched, but not `excl/a.html`.
 
 ### globule.match
 Match one or more globbing patterns against one or more file paths. Returns a uniqued array of all file paths that match any of the specified globbing patterns. Both the `patterns` and `filepaths` arguments can be a single string or array of strings. Paths matching patterns that begin with `!` will be excluded from the returned array. Patterns are processed in order, so inclusion and exclusion order is significant.
