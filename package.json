@@ -46,7 +46,7 @@
   ],
   "dependencies": {
     "lodash": "~2.4.1",
-    "glob": "~3.2.7",
+    "glob": "~5.0.14",
     "minimatch": "~0.2.11"
   }
 }
