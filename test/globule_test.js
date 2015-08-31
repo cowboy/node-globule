@@ -308,7 +308,7 @@ exports['find'] = {
       ['deep.txt', 'deeper/deeper.txt', 'deeper/deepest/deepest.txt'],
       'should not prefix srcBase to returned paths.');
     test.deepEqual(globule.find(['**/deep*.txt'], {srcBase: 'deep', prefixBase: true}),
-      ['deep/deep.txt', 'deep/deeper/deeper.txt', 'deep/deeper/deepest/deepest.txt'],
+      [path.join('deep', 'deep.txt'), path.join('deep', 'deeper', 'deeper.txt'), path.join('deep', 'deeper', 'deepest', 'deepest.txt')],
       'should prefix srcBase to returned paths.');
     test.done();
   },
@@ -325,6 +325,13 @@ exports['find'] = {
       'non-matching filenames should be returned in result set.');
     test.done();
   },
+	'options.ignore': function(test) {
+    test.expect(1);
+    test.deepEqual(globule.find(['**'], {ignore: ["js/**", "css/**"]}),
+      ['README.md', 'deep', 'deep/deep.txt', 'deep/deeper', 'deep/deeper/deeper.txt', 'deep/deeper/deepest','deep/deeper/deepest/deepest.txt'],
+      'should ignore js and css directories.');
+    test.done();
+  }
 };
 
 exports['mapping'] = {
