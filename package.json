@@ -1,7 +1,7 @@
 {
   "name": "globule",
   "description": "An easy-to-use wildcard globbing library.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "homepage": "https://github.com/cowboy/node-globule",
   "author": {
     "name": "\"Cowboy\" Ben Alman",
@@ -14,15 +14,10 @@
   "bugs": {
     "url": "https://github.com/cowboy/node-globule/issues"
   },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/cowboy/node-globule/blob/master/LICENSE-MIT"
-    }
-  ],
+  "license": "MIT",
   "main": "lib/globule",
   "engines": {
-    "node": ">= 0.8.0"
+    "node": ">= 0.10"
   },
   "scripts": {
     "test": "grunt nodeunit"
@@ -45,7 +40,7 @@
     "awesome"
   ],
   "dependencies": {
-    "lodash": "~3.10.1",
+    "lodash": "^3.0.0",
     "glob": "~3.2.7",
     "minimatch": "~0.2.11"
   }
