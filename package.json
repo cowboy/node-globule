@@ -32,7 +32,8 @@
     "grunt-contrib-nodeunit": "~0.2.2",
     "grunt-contrib-watch": "~0.5.3",
     "grunt": "~0.4.2",
-    "async": "~0.2.9"
+    "async": "~0.2.9",
+    "shelljs": "~0.2.6"
   },
   "keywords": [
     "glob",

@@ -1,5 +1,8 @@
 'use strict';
 
+var shelljs = require('shelljs');
+var path = require('path');
+
 module.exports = function(grunt) {
 
   // Project configuration.
@@ -74,6 +77,12 @@ module.exports = function(grunt) {
         },
       },
     },
+    build_examples: {
+      all: {
+        src: 'examples/*.js',
+        dest: 'examples.md',
+      },
+    },
   });
 
   // These plugins provide necessary tasks.
@@ -114,6 +123,42 @@ module.exports = function(grunt) {
         grunt.log.error();
         throw err;
       }
+    });
+  });
+
+  grunt.registerMultiTask('build_examples', 'Build examples.md file.', function() {
+    this.files.forEach(function(f) {
+      var output = '# Examples\n';
+      f.src.forEach(function(src) {
+        var js = grunt.file.read(src);
+        function parseJs() {
+          var s = js;
+          s = s.replace(/^[\s\S]*\n(.*')..\/lib\/(globule'\))/, '$1$2');
+          s = s.replace(/\s+$/, '');
+          return s;
+        }
+        function evalJs() {
+          var s = shelljs.exec('node ' + src, {silent: true}).output;
+          s = s.replace(/\s+$/, '');
+          return s;
+        }
+        evalJs();
+        output += [
+          '## [' + path.basename(src) + '](' + src + ')',
+          '',
+          '```js',
+          parseJs(),
+          '```',
+          '',
+          '#### ' + path.basename(src) + ' output',
+          '',
+          '```',
+          evalJs(),
+          '```',
+          '',
+        ].join('\n');
+      });
+      grunt.file.write(f.dest, output);
     });
   });
 };
