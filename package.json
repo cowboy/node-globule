@@ -40,8 +40,8 @@
     "awesome"
   ],
   "dependencies": {
-    "lodash": "^3.0.0",
-    "glob": "~3.2.7",
-    "minimatch": "~0.2.11"
+    "glob": "~7.0.3",
+    "lodash": "~4.9.0",
+    "minimatch": "~3.0.0"
   }
 }
