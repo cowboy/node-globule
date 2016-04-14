@@ -1,4 +1,4 @@
-# globule [![Build Status](https://secure.travis-ci.org/cowboy/node-globule.png?branch=master)](http://travis-ci.org/cowboy/node-globule)
+# globule [![Build Status: Linux](https://travis-ci.org/cowboy/node-globule.svg?branch=master)](https://travis-ci.org/cowboy/node-globule) [![Build Status: Windows](https://ci.appveyor.com/api/projects/status/i9fnc38q952r9nc0/branch/master?svg=true)](https://ci.appveyor.com/project/gruntjs/node-globule/branch/master)
 
 An easy-to-use wildcard globbing library.
 
