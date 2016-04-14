@@ -119,9 +119,9 @@ globule.mapping({src: ["a.js", "b.js"], srcBase: "foo", destBase: "bar"})
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
-2014-01-07 - v0.2.0 - Updated dependencies. Added `src` option. Improved exclusion speed significantly.
+2014-01-07 - v0.2.0 - Updated dependencies. Added `src` option. Improved exclusion speed significantly.  
 2013-04-11 - v0.1.0 - Initial release.
 
 ## License
-Copyright (c) 2016 "Cowboy" Ben Alman
+Copyright (c) 2016 "Cowboy" Ben Alman  
 Licensed under the MIT license.
