@@ -125,5 +125,5 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 2013-04-11 - v0.1.0 - Initial release.
 
 ## License
-Copyright (c) 2016 "Cowboy" Ben Alman  
+Copyright (c) 2017 "Cowboy" Ben Alman  
 Licensed under the MIT license.
