@@ -66,9 +66,10 @@ exports['match'] = {
     test.done();
   },
   'exclusion': function(test) {
-    test.expect(5);
+    test.expect(6);
     test.deepEqual(globule.match(['!*.js'], ['foo.js', 'bar.js']), [], 'solitary exclusion should match nothing');
     test.deepEqual(globule.match(['*.js', '!*.js'], ['foo.js', 'bar.js']), [], 'exclusion should cancel match');
+    test.deepEqual(globule.match(['*.js', '!(foo|bar).js'], ['foo.js', 'bar.js', 'baz.js']), ['baz.js'], 'group exlusion should be handled correctly');
     test.deepEqual(globule.match(['*.js', '!f*.js'], ['foo.js', 'bar.js', 'baz.js']),
       ['bar.js', 'baz.js'],
       'partial exclusion should partially cancel match');
