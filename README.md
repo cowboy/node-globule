@@ -119,6 +119,7 @@ globule.mapping({src: ["a.js", "b.js"], srcBase: "foo", destBase: "bar"})
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
+2018-05-29 - v1.2.1 - Update dependencies, lodash@4.17.10 to avoid errant security warnings.  
 2017-06-10 - v1.2.0 - Update dependencies, lodash@4.17.  
 2016-10-23 - v1.1.0 - Update dependencies, lodash@4.16, glob@7.1.  
 2016-04-14 - v1.0.0 - Update dependencies, lodash@4.9, glob@7.0, minimatch@3.0. Paths are unix-style with prefixBase enabled.  
