@@ -209,6 +209,13 @@ exports['find'] = {
       'inclusion / exclusion order matters');
     test.done();
   },
+  'exclusion against relative paths': function (test) {
+    test.expect(1);
+    test.deepEqual(globule.find('../../fixtures/expand/js/*.js', 'css/**/*.css', '!**/js/**', '!**/css/**/qux.css'), [
+      'css/baz.css'],
+        'exclusion rules should be properly evaluated against relative filepaths');
+    test.done();
+  },
   'options.src': function(test) {
     test.expect(4);
     test.deepEqual(globule.find({src: '**/*.js'}), ['js/bar.js', 'js/foo.js'], 'single pattern argument should match.');
