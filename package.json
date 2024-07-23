@@ -20,16 +20,16 @@
     "lib"
   ],
   "engines": {
-    "node": ">= 0.10"
+    "node": ">=20"
   },
   "scripts": {
     "test": "grunt"
   },
   "devDependencies": {
-    "grunt-contrib-jshint": "^1.0.0",
-    "grunt-contrib-nodeunit": "^2.0.0",
+    "grunt-contrib-jshint": "^3.2.0",
+    "grunt-contrib-nodeunit": "^5.0.0",
     "grunt-contrib-watch": "^1.1.0",
-    "grunt": "^1.0.2"
+    "grunt": "^1.6.1"
   },
   "keywords": [
     "glob",
